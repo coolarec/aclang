@@ -8,7 +8,8 @@ typedef enum {
     T_inputInt,T_Factorial,T_Explain
 } TokenType;
 
-static void print_token(int token, int token_count,char* yytext,int yylineno,int col,int yyleng) {
+static void print_token(int token, int token_count,char* yytext,
+                        int yylineno,int col,int yyleng) {
     static char* token_strs[] = {
         "T_Le", "T_Ge", "T_Eq", "T_Ne", "T_And", "T_Or", "T_IntConstant",
         "T_StringConstant", "T_Identifier", "T_Void", "T_Int", "T_While",

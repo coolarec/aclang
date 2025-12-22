@@ -9,7 +9,7 @@ def syntaxAnalysis():
     source_code = request.json["code"]
 
     result = subprocess.run(
-        ["./lex.exe"],
+        ["./Lexical.exe"],
         input=source_code,
         text=True,
         encoding="utf-8",

@@ -1,10 +1,10 @@
-all: lex.exe
+all: Lexical.exe
 
-lex.exe: lex.yy.c
-	gcc -o ../lex.exe lex.yy.c
+Lexical.exe: lex.yy.c
+	gcc -o ../Lexical.exe lex.yy.c
 
 lex.yy.c: lex.l
 	win_flex lex.l
 
 clean:
-	del lex.yy.c lex.exe
+	del /Q lex.yy.c

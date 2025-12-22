@@ -51,7 +51,7 @@ SINGLE_COMMENT    ("//"[^\n]*)
     print_error_token(yytext,yylineno,col,col,"Invalid identifier starting with digit");
 }
 
-{INTEGER}   { token_count++; return T_IntConstant;     }
+[0-9]+   { token_count++; return T_IntConstant;     }
 
 
 {IDENT}     { token_count++; return T_Identifier;      }

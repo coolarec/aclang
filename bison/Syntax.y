@@ -91,7 +91,7 @@ void yyerror(const char* s) { fprintf(stderr, "Syntax Error: %s\n", s); exit(1);
 %left '*' '/'
 %right '!'
 
-%type <ival> expr if_prefix while_label
+%type <ival> expr if_prefix while_label var_list
 
 %%
 
@@ -160,10 +160,20 @@ while_label
           $$ = l_begin;
       }
     ;
+var_list 
+    : var_list ',' T_Identifier
+      {
+        insert_symbol($3, 1, 0);
+      }
+    | T_Identifier
+      {
+        insert_symbol($1, 1, 0);
+      }
+    ;
 
 stmt
     : T_Return expr ';'           { emit("RET"); }
-    | T_Int T_Identifier ';'      { insert_symbol($2, 1, 0); }
+    | T_Int var_list  ';'      { }
     | T_Identifier '=' expr ';'   { emit("STO %s", $1); }
     | T_Identifier '(' arg_list ')' ';' { emit("CALL %s", $1); }
     | compound_stmt

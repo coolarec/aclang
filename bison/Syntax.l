@@ -15,10 +15,12 @@
 "return"        { return T_Return; }
 "break"         { return T_Break; }
 "continue"      { return T_Continue; }
+
+"factorial"     { return T_Factorial; }
+":"            { return T_Explain; }
+
 "inputInt"      { return T_inputInt; }
 "outputInt"     { return T_outputInt; }
-"factorial"     { return T_Factorial; }
-"->"             { return T_Explain; }
 
 "=="            { return T_Eq; }
 "!="            { return T_Ne; }

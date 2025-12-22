@@ -8,7 +8,8 @@
 int cur_line_num = 1;
 int col = 1;
 int token_count = 0;
-void print_error_token(const char* , int , int , int );
+int first = 1;
+void print_error_token(const char* , int , int , int, const char*);
 %}
 
 DIGIT   [0-9]
@@ -46,27 +47,40 @@ SINGLE_COMMENT    ("//"[^\n]*)
 "<="        { token_count++; return T_Le;              }
 "**"        { token_count++; return T_Factorial;       }
 
+[0-9]+[a-zA-Z_][a-zA-Z0-9_]* {
+    print_error_token(yytext,yylineno,col,col,"Invalid identifier starting with digit");
+}
+
 {INTEGER}   { token_count++; return T_IntConstant;     }
+
 
 {IDENT}     { token_count++; return T_Identifier;      }
 
-.           { print_error_token(yytext,yylineno,col,col); col++; }
+.           { print_error_token(yytext,yylineno,col,col,"Unrecognized character"); col++; }
 %%
 
 
 int main(int argc, char* argv[]) {
     int token;
-    printf(" \"data\": [\n");
+    printf(" [\n");
     while (token = yylex()) {
+        if(!first){
+            printf(",\n");
+        }
+        first=0;
         print_token(token,token_count,yytext,yylineno,col,yyleng);
         col+=yyleng;
     }
-    printf("  ]\n");
+    printf("\n  ]\n");
     return 0;
 }
 
 
-void print_error_token(const char* text, int line, int col_start, int col_end) {
+void print_error_token(const char* text, int line, int col_start, int col_end, const char* msg) {
+    if(!first){
+        printf(",\n");
+    }
+    first=0;
     printf(
         "  {\n"
         "    \"type\": \"LEX_ERROR\",\n"
@@ -74,12 +88,13 @@ void print_error_token(const char* text, int line, int col_start, int col_end) {
         "    \"line\": %d,\n"
         "    \"col_start\": %d,\n"
         "    \"col_end\": %d,\n"
-        "    \"message\": \"Unrecognized character\"\n"
-        "  },\n",
+        "    \"message\": \"%s\"\n"
+        "   }",
         text,
         line,
         col_start,
-        col_end
+        col_end,
+        msg
     );
 }
 

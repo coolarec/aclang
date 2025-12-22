@@ -34,7 +34,7 @@ static void print_token(int token, int token_count,char* yytext,int yylineno,int
         "    \"line\": %d,\n"
         "    \"col_start\": %d,\n"
         "    \"col_end\": %d\n"
-        "  },\n",
+        "  }",
         type,
         yytext,
         yylineno,

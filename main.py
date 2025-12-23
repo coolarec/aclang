@@ -75,7 +75,7 @@ def get_symbol_table():
         return jsonify({"success": False, "error": f"服务器内部错误: {str(e)}"}), 500
 
 
-@app.route("/intermediate_code", methods=["POST"])
+@app.route("/pcode", methods=["POST"])
 def getPcode():
     try:
         source_code = request.json['code']

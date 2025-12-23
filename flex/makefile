@@ -61,15 +61,6 @@ ifeq ($(OS),Windows_NT)
 	@if exist "$(TMP_DIR)" $(RM) "$(TMP_DIR)$(S)*"
 	@if exist "$(LEX_C)" $(RM) "$(LEX_C)"
 else
-	$(RM) $(TMP_DIR)$(S)*
+	$(RD) $(TMP_DIR)$(S)*
 	$(RM) $(LEX_C)
-endif
-
-# 深度清理
-distclean: clean
-ifeq ($(OS),Windows_NT)
-	@if exist "$(TMP_DIR)" $(RMDIR) "$(TMP_DIR)"
-	@if exist "$(OUT_EXE_DIR)" $(RMDIR) "$(OUT_EXE_DIR)"
-else
-	$(RMDIR) $(TMP_DIR) $(OUT_EXE_DIR)
 endif

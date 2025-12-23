@@ -1,10 +1,4 @@
 main : int () {
     int a,b,c,d;
-    a = 10;
-    b = 20;
-    c=100;
-    while (a<c){
-        b=b+a;
-        a=a+10;
-    }
+    d=a*b+c;
 }

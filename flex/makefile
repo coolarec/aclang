@@ -61,6 +61,6 @@ ifeq ($(OS),Windows_NT)
 	@if exist "$(TMP_DIR)" $(RM) "$(TMP_DIR)$(S)*"
 	@if exist "$(LEX_C)" $(RM) "$(LEX_C)"
 else
-	$(RD) $(TMP_DIR)$(S)*
+	$(RMDIR) $(TMP_DIR)$(S)*
 	$(RM) $(LEX_C)
 endif

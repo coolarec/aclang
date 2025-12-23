@@ -2,6 +2,10 @@ import subprocess
 from flask import Flask, request, jsonify
 import json
 from flask_cors import CORS
+import sys
+
+def is_windows():
+    return sys.platform.startswith("win")
 
 app = Flask(__name__)
 CORS(app)
@@ -11,7 +15,7 @@ def syntaxAnalysis():
     source_code = request.json["code"]
 
     result = subprocess.run(
-        ["./output/exe/Lexical.exe"],
+        ["./output/exe/Lexical"+".exe" if is_windows() else ""],
         input=source_code,
         text=True,
         encoding="utf-8",
@@ -32,7 +36,7 @@ def get_symbol_table():
         source_code = request.json["code"]
         
         result = subprocess.run(
-            ["./output/exe/symbol_table.exe"],
+            ["./output/exe/symbol_table"+".exe" if is_windows() else ""],
             input=source_code,
             text=True,
             encoding="utf-8",

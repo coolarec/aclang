@@ -1,4 +1,4 @@
-SUBDIRS = flex symbol_table ast pcode
+SUBDIRS = flex symbolTable ast pcode
 
 .PHONY: all clean $(SUBDIRS)
 

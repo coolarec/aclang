@@ -1,4 +1,4 @@
-main : void () {
+main : int () {
     int a,b,c,d;
     a = 10;
     b = 20;

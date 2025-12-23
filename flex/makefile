@@ -18,10 +18,6 @@ ifeq ($(OS),Windows_NT)
     RM     = del /Q /F
     RMDIR  = rmdir /S /Q
     
-    # 自动识别 win_flex
-    ifeq (, $(shell where flex 2>nul))
-        FLEX = win_flex
-    endif
 else
     # --- Unix/Linux/macOS 环境 ---
     S      = /

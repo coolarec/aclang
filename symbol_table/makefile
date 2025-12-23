@@ -2,16 +2,15 @@
 CC       = gcc
 FILENAME = symbol_table
 
+FLEX  = flex
+BISON = bison
 # 2. 跨平台变量与分隔符定义
 ifeq ($(OS),Windows_NT)
     # --- Windows 环境 ---
     S     = \\
     SHELL = cmd.exe
     TARGET = $(FILENAME).exe
-    
-    FLEX  = win_flex
-    BISON = win_bison
-    
+
     # 命令宏
     # $(subst /,\,$(1)) 确保路径中即使残留 / 也会被转为 \ 适配 CMD
     MKDIR = if not exist "$(1)" mkdir "$(1)"
@@ -21,9 +20,6 @@ else
     # --- Unix/Linux/macOS 环境 ---
     S      = /
     TARGET = $(FILENAME)
-    
-    FLEX  = flex
-    BISON = bison
     
     MKDIR = mkdir -p "$(1)"
     RM    = rm -f

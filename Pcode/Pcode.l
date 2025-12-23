@@ -2,6 +2,7 @@
 #include "y.tab.h"
 #include <string.h>
 #include <stdlib.h>
+extern char* yytext;
 %}
 
 %option noyywrap

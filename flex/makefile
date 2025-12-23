@@ -32,13 +32,14 @@ endif
 OUT_EXE_DIR = ..$(S)output$(S)exe
 TMP_DIR     = ..$(S)output$(S)tmp
 
-LEX_C  = $(TMP_DIR)$(S)lex.yy.c
+LEX_C  = lex.yy.c
 OUTPUT = $(OUT_EXE_DIR)$(S)$(TARGET)
 
 # 4. 编译规则
 .PHONY: all clean dirs
 
 all: dirs $(OUTPUT)
+	$(MAKE) clean
 
 # 创建目录
 dirs:
@@ -52,16 +53,16 @@ $(OUTPUT): $(LEX_C)
 
 # Flex 生成 C 文件阶段
 $(LEX_C): $(SRC)
-	$(FLEX) -o "$(LEX_C)" "$(SRC)"
+	$(FLEX) "$(SRC)"
 
 # 5. 清理规则
 clean:
 ifeq ($(OS),Windows_NT)
 	@if exist "$(TMP_DIR)" $(RM) "$(TMP_DIR)$(S)*"
-	@if exist "$(OUTPUT)" $(RM) "$(OUTPUT)"
+# 	@if exist "$(OUTPUT)" $(RM) "$(OUTPUT)"
 else
 	$(RM) $(TMP_DIR)$(S)*
-	$(RM) $(OUTPUT)
+# 	$(RM) $(OUTPUT)
 endif
 
 # 深度清理

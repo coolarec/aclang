@@ -2,13 +2,12 @@
 CC       = gcc
 FILENAME = pcode
 
-FLEX  = win_flex
-BISON = win_bison
+FLEX  = flex
+BISON = bison
 # 2. 跨平台变量与分隔符定义
 ifeq ($(OS),Windows_NT)
     # --- Windows 环境 ---
     S     = \\
-    SHELL = cmd.exe
     TARGET = $(FILENAME).exe
     
     # 命令宏
@@ -34,7 +33,7 @@ TMP_DIR     = ..$(S)output$(S)tmp
 LEX_SRC  = $(FILENAME).l
 YACC_SRC = $(FILENAME).y
 
-LEX_C    = $(TMP_DIR)$(S)lex.yy.c
+LEX_C    = lex.yy.c
 YACC_C   = $(TMP_DIR)$(S)y.tab.c
 YACC_H   = $(TMP_DIR)$(S)y.tab.h
 YACC_OUT = $(TMP_DIR)$(S)y.output
@@ -45,6 +44,7 @@ OUTPUT   = $(OUT_EXE_DIR)$(S)$(TARGET)
 
 # 默认目标：先建目录，再编译
 all: dirs $(OUTPUT)
+	$(MAKE) clean
 
 # 创建目录
 dirs:
@@ -55,24 +55,25 @@ dirs:
 $(OUTPUT): $(LEX_C) $(YACC_C)
 	$(CC) -I. -I$(TMP_DIR) -o "$(OUTPUT)" "$(LEX_C)" "$(YACC_C)"
 
-# Flex 阶段：生成 lex.yy.c
-# 注意：Lex 依赖于 Yacc 生成的头文件以获取 Token 定义
-$(LEX_C): $(LEX_SRC) $(YACC_H)
-	$(FLEX) -o "$(LEX_C)" "$(LEX_SRC)"
-
 # Bison 阶段：生成 y.tab.c 和 y.tab.h
 # -d: 生成头文件, -v: 生成 y.output, -y: yacc 兼容模式(生成 y.tab.c)
 $(YACC_C) $(YACC_H): $(YACC_SRC)
-	$(BISON) -d -v -y -o "$(YACC_C)" "$(YACC_SRC)"
+	$(BISON) -vdty -o "$(YACC_C)" "$(YACC_SRC)"
+
+
+# Flex 阶段：生成 lex.yy.c
+# 注意：Lex 依赖于 Yacc 生成的头文件以获取 Token 定义
+$(LEX_C): $(LEX_SRC) $(YACC_H)
+	$(FLEX) "$(LEX_SRC)"
 
 # 6. 清理规则
 clean:
 ifeq ($(OS),Windows_NT)
 	@if exist "$(TMP_DIR)" $(RD) "$(TMP_DIR)"
-	@if exist "$(OUTPUT)" $(RM) "$(OUTPUT)"
+# 	@if exist "$(OUTPUT)" $(RM) "$(OUTPUT)"
 else
 	$(RD) $(TMP_DIR)
-	$(RM) $(OUTPUT)
+# 	$(RM) $(OUTPUT)
 endif
 
 # 彻底清理（包括输出目录）

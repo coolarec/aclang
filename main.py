@@ -18,7 +18,7 @@ def syntaxAnalysis():
     source_code = request.json["code"]
 
     result = subprocess.run(
-        ["./output/exe/Lexical"+".exe" if is_windows() else ""],
+        ["./output/exe/Lexical"+(".exe" if is_windows() else "")],
         input=source_code,
         text=True,
         encoding="utf-8",
@@ -40,7 +40,7 @@ def get_symbol_table():
         source_code = request.json["code"]
 
         result = subprocess.run(
-            ["./output/exe/symbol_table"+".exe" if is_windows() else ""],
+            ["./output/exe/symbol_table"+(".exe" if is_windows() else "")],
             input=source_code,
             text=True,
             encoding="utf-8",
@@ -80,7 +80,7 @@ def getPcode():
     try:
         source_code = request.json['code']
         result = subprocess.run(
-            ["./output/exe/pcode"+".exe" if is_windows() else ""],
+            ["./output/exe/pcode"+(".exe" if is_windows() else "")],
             input=source_code,
             text=True,
             encoding="utf-8",

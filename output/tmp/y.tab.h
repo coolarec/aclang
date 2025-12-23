@@ -34,7 +34,7 @@
 # define YY_YY_OUTPUT_TMP_Y_TAB_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -98,14 +98,14 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 189 "pcode.y"
+#line 189 "symbol_table.y"
 
     int ival;
     char* str;
 
 
 /* Line 2058 of yacc.c  */
-#line 109 "../output/tmp/y.tab.h"
+#line 109 "..\\\\output\\\\tmp\\\\y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

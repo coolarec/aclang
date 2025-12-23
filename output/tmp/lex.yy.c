@@ -1,6 +1,6 @@
-#line 1 "../output/tmp/lex.yy.c"
+#line 1 "..\\\\output\\\\tmp\\\\lex.yy.c"
 
-#line 3 "../output/tmp/lex.yy.c"
+#line 3 "..\\\\output\\\\tmp\\\\lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -517,13 +517,13 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "pcode.l"
-#line 2 "pcode.l"
+#line 1 "symbol_table.l"
+#line 2 "symbol_table.l"
 #include "y.tab.h"
 #include <string.h>
 #include <stdlib.h>
-#line 525 "../output/tmp/lex.yy.c"
-#line 526 "../output/tmp/lex.yy.c"
+#line 525 "..\\\\output\\\\tmp\\\\lex.yy.c"
+#line 526 "..\\\\output\\\\tmp\\\\lex.yy.c"
 
 #define INITIAL 0
 
@@ -740,10 +740,10 @@ YY_DECL
 		}
 
 	{
-#line 10 "pcode.l"
+#line 10 "symbol_table.l"
 
 
-#line 746 "../output/tmp/lex.yy.c"
+#line 746 "..\\\\output\\\\tmp\\\\lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -812,102 +812,102 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 12 "pcode.l"
+#line 12 "symbol_table.l"
 { return T_Int; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 13 "pcode.l"
+#line 13 "symbol_table.l"
 { return T_If; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 14 "pcode.l"
+#line 14 "symbol_table.l"
 { return T_Else; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 15 "pcode.l"
+#line 15 "symbol_table.l"
 { return T_While; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 16 "pcode.l"
+#line 16 "symbol_table.l"
 { return T_Return; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 17 "pcode.l"
+#line 17 "symbol_table.l"
 { return T_Break; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 18 "pcode.l"
+#line 18 "symbol_table.l"
 { return T_Continue; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 19 "pcode.l"
+#line 19 "symbol_table.l"
 { return T_Void; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 20 "pcode.l"
+#line 20 "symbol_table.l"
 { return T_Explain; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 22 "pcode.l"
+#line 22 "symbol_table.l"
 { return T_inputInt; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 23 "pcode.l"
+#line 23 "symbol_table.l"
 { return T_outputInt; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 25 "pcode.l"
+#line 25 "symbol_table.l"
 { return T_Eq; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 26 "pcode.l"
+#line 26 "symbol_table.l"
 { return T_Ne; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 27 "pcode.l"
+#line 27 "symbol_table.l"
 { return T_Le; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 28 "pcode.l"
+#line 28 "symbol_table.l"
 { return T_Ge; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 29 "pcode.l"
+#line 29 "symbol_table.l"
 { return T_And; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 30 "pcode.l"
+#line 30 "symbol_table.l"
 { return T_Or; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 31 "pcode.l"
+#line 31 "symbol_table.l"
 { return T_Power; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 32 "pcode.l"
+#line 32 "symbol_table.l"
 { yylval.ival = atoi(yytext); return T_IntConstant; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 33 "pcode.l"
+#line 33 "symbol_table.l"
 { 
     yylval.str = strdup(yytext); // 必须分配新空间
     return T_Identifier; 
@@ -916,25 +916,25 @@ YY_RULE_SETUP
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 37 "pcode.l"
+#line 37 "symbol_table.l"
 { /* skip */ }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 38 "pcode.l"
+#line 38 "symbol_table.l"
 { /* comment */ }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 40 "pcode.l"
+#line 40 "symbol_table.l"
 { return yytext[0]; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 42 "pcode.l"
+#line 42 "symbol_table.l"
 ECHO;
 	YY_BREAK
-#line 937 "../output/tmp/lex.yy.c"
+#line 937 "..\\\\output\\\\tmp\\\\lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1951,5 +1951,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 42 "pcode.l"
+#line 42 "symbol_table.l"
 

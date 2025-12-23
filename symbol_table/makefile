@@ -1,6 +1,6 @@
 # 1. 项目基础定义
 CC       = gcc
-FILENAME = ast
+FILENAME = symbol_table
 
 # 2. 跨平台变量与分隔符定义
 ifeq ($(OS),Windows_NT)

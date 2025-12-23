@@ -1,4 +1,4 @@
-SUBDIRS = flex symble_table ast pcode
+SUBDIRS = flex symbol_table ast pcode
 
 .PHONY: all clean $(SUBDIRS)
 
@@ -8,7 +8,7 @@ $(SUBDIRS):
 	$(MAKE) -C $@
 
 clean:
-	$(MAKE) -C lexical clean
+	$(MAKE) -C flex clean
 	$(MAKE) -C syntax clean
 	$(MAKE) -C semantic clean
 	$(MAKE) -C pcode clean

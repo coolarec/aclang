@@ -1,8 +1,5 @@
 CC = gcc
-FLEX = win_flex
-BISON = win_bison.exe
-FILENAME = ast
-TARGET = $(FILENAME).exe
+FILENAME = Pcode
 
 LEX_SRC = $(FILENAME).l
 YACC_SRC = $(FILENAME).y
@@ -10,6 +7,19 @@ YACC_SRC = $(FILENAME).y
 LEX_C = lex.yy.c
 YACC_C = y.tab.c
 YACC_H = y.tab.h
+
+# 平台判断
+ifeq ($(OS),Windows_NT)
+    TARGET = $(FILENAME).exe
+    FLEX = win_flex
+    BISON = win_bison
+    RM = del /Q
+else
+    TARGET = $(FILENAME)
+    FLEX = flex
+    BISON = bison
+    RM = rm -f
+endif
 
 all: $(TARGET)
 
@@ -23,4 +33,4 @@ $(YACC_C) $(YACC_H): $(YACC_SRC)
 	$(BISON) -vdty $(YACC_SRC)
 
 clean:
-	del /Q $(LEX_C) $(YACC_C) $(YACC_H) y.output $(TARGET)
+	$(RM) $(LEX_C) $(YACC_C) $(YACC_H) y.output ../output/exe/$(TARGET)

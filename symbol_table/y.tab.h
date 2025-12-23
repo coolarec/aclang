@@ -65,7 +65,7 @@ extern int yydebug;
      T_Or = 274,
      T_inputInt = 275,
      T_outputInt = 276,
-     T_Factorial = 277,
+     T_Power = 277,
      LOWER_THAN_ELSE = 278
    };
 #endif
@@ -89,7 +89,7 @@ extern int yydebug;
 #define T_Or 274
 #define T_inputInt 275
 #define T_outputInt 276
-#define T_Factorial 277
+#define T_Power 277
 #define LOWER_THAN_ELSE 278
 
 
@@ -98,7 +98,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 71 "Syntax.y"
+#line 189 "symbol_table.y"
 
     int ival;
     char* str;
@@ -112,8 +112,21 @@ typedef union YYSTYPE
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
-extern YYSTYPE yylval;
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+} YYLTYPE;
+# define yyltype YYLTYPE /* obsolescent; will be withdrawn */
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
 
+extern YYSTYPE yylval;
+extern YYLTYPE yylloc;
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);

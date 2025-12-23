@@ -5,6 +5,7 @@
 %}
 
 %option noyywrap
+%option yylineno
 
 %%
 
@@ -15,9 +16,8 @@
 "return"        { return T_Return; }
 "break"         { return T_Break; }
 "continue"      { return T_Continue; }
-
-"factorial"     { return T_Factorial; }
-":"            { return T_Explain; }
+"void"          { return T_Void; }
+":"             { return T_Explain; }
 
 "inputInt"      { return T_inputInt; }
 "outputInt"     { return T_outputInt; }
@@ -28,11 +28,13 @@
 ">="            { return T_Ge; }
 "&&"            { return T_And; }
 "||"            { return T_Or; }
-
+"**"            { return T_Power; }
 [0-9]+          { yylval.ival = atoi(yytext); return T_IntConstant; }
-[a-zA-Z_][a-zA-Z0-9_]* { yylval.str = _strdup(yytext); return T_Identifier; }
-
-[ \t\n\r]       { /* skip */ }
+[a-zA-Z_][a-zA-Z0-9_]* { 
+    yylval.str = strdup(yytext); // 必须分配新空间
+    return T_Identifier; 
+}
+[ \t\r\n]       { /* skip */ }
 "//".*          { /* comment */ }
 
 .               { return yytext[0]; }

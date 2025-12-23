@@ -34,7 +34,6 @@
     yylval.str = strdup(yytext); // 必须分配新空间
     return T_Identifier; 
 }
-
 [ \t\r\n]       { /* skip */ }
 "//".*          { /* comment */ }
 

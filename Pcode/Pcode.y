@@ -4,19 +4,18 @@
 #include <string.h>
 #include <stdarg.h>
 
-void yyerror(const char* fmt, ...);
-
 extern int yylineno;
 extern char* yytext;
 int has_errors = 0;
 
+void yyerror(const char*,...);
 /* ========= 符号表 ========= */
 #define MAX_SCOPE 16
 #define MAX_SYMBOL 128
-
+int first = 1;
 typedef struct {
     char name[64];
-    int kind;   // 0=func, 1=var, 2=param
+    int kind;   // 0=func, 1=INT, 2=param
     int type;   // 0=int
 } Symbol;
 
@@ -31,11 +30,6 @@ int scope_top = -1;
 void enter_scope() {
     if (++scope_top < MAX_SCOPE) scope_stack[scope_top].count = 0;
 }
-
-void leave_scope() {
-    if (scope_top >= 0) scope_top--;
-}
-
 
 
 // 在当前作用域查找符号
@@ -78,8 +72,8 @@ int is_symbol_defined_in_current_scope(char* name) {
 // 修改insert_symbol函数，自动检查重复定义
 int insert_symbol(char* name, int kind, int type) {
     if (scope_top < 0) {
-        fprintf(stderr, "Error: No active scope for symbol %s\n", name);
-        exit(1);
+        yyerror("No active scope for symbol %s\n", name);
+        // fprintf(stderr, "Error: No active scope for symbol %s\n", name);
         return -1;
     }
     
@@ -89,8 +83,9 @@ int insert_symbol(char* name, int kind, int type) {
     for (int i = 0; i < s->count; i++) {
         if (strcmp(s->symbols[i].name, name) == 0) {
             // 符号已存在
-            fprintf(stderr, "Error: Symbol '%s' already defined in current scope\n", name);
-            exit(1);
+            yyerror("Symbol '%s' already defined in current scope\n", name);
+            // fprintf(stderr, "Error: Symbol '%s' already defined in current scope\n", name);
+            // exit(1);
             return -2;  // 返回错误码
         }
     }
@@ -104,27 +99,16 @@ int insert_symbol(char* name, int kind, int type) {
         s->count++;
         return 0;  // 成功
     }
-    
-    fprintf(stderr, "Error: Symbol table full for scope\n");
-    exit(1);
+    yyerror("Symbol table full for scope\n");
+    // fprintf(stderr, "Error: Symbol table full for scope\n");
+    // exit(1);
     return -3;
 }
 
-void print_symbol_table() {
-    int i, j;
-    printf("========== Symbol Table ==========\n");
-    for (i = 0; i <= scope_top; i++) {
-        printf("Scope %d:\n", i);
-        Scope* s = &scope_stack[i];
-        for (j = 0; j < s->count; j++) {
-            Symbol* sym = &s->symbols[j];
-            printf("  name=%s  kind=%d  type=%d\n",
-                   sym->name, sym->kind, sym->type);
-        }
-    }
-    printf("=================================\n");
+void leave_scope() {
+    // print_current_scope_json();
+    if (scope_top >= 0) scope_top--;
 }
-
 
 /* ========= P-code ========= */
 int label_cnt = 0;
@@ -151,6 +135,7 @@ int cur_while_end() { return while_stack[while_top].end; }
 
 extern int yylex(void);
 
+
 %}
 %locations
 
@@ -161,7 +146,7 @@ extern int yylex(void);
 
 %token <ival> T_IntConstant
 %token <str>  T_Identifier
-%token T_Void T_Int T_While T_If T_Else T_Return T_Explain T_Break T_Continue
+%token T_Void T_Int T_While T_If T_Else T_Return T_Explain T_Break T_Continue 
 %token T_Le T_Ge T_Eq T_Ne T_And T_Or T_inputInt T_outputInt T_Power
 
 /* 优先级定义 */
@@ -222,7 +207,11 @@ param_list
     ;
 
 param
-    : T_Int T_Identifier { insert_symbol($2, 2, 0); }
+    : T_Int T_Identifier 
+      { 
+        insert_symbol($2, 2, 0);
+        emit("INT %s",$2); 
+      }
     ;
 
 compound_stmt
@@ -251,25 +240,27 @@ while_label
           $$ = l_begin;
       }
     ;
-var_list
-    : var_list ',' T_Identifier
+INT_list
+    : INT_list ',' T_Identifier
       {
           insert_symbol($3, 1, 0);
+          emit("INT %s",$3);
       }
     | T_Identifier
       {
           insert_symbol($1, 1, 0);
+          emit("INT %s",$1);
       }
     ;
 
 
 stmt
-    : T_Return expr ';'           { }
-    | T_Int var_list ';'      { }
+    : T_Return expr ';'       { }
+    | T_Int INT_list ';'      { }
     | T_Identifier '=' expr ';'   
       { 
         if(!is_symbol_defined($1)){
-            yyerror("Undefined variable '%s'\n",  $1);
+            yyerror("Undefined INTiable '%s'\n",  $1);
         }
         emit("STO %s", $1); 
       }
@@ -322,7 +313,7 @@ expr
     : T_IntConstant          { emit("LIT %d", $1); }
     | T_Identifier           { 
         if(!is_symbol_defined($1)){
-            yyerror("Undefined variable '%s'\n", $1);
+            yyerror("Undefined INTiable '%s'\n", $1);
         }
         emit("LOD %s", $1);
     }
@@ -348,9 +339,11 @@ expr
 
 
 int main() {
-    has_errors |= yyparse();
-    return has_errors;
+    int status=yyparse();
+    return status | has_errors;
 }
+#include <stdarg.h>
+
 // 增强版 yyerror
 void yyerror(const char* fmt, ...)
 {

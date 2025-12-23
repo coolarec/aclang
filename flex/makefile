@@ -17,7 +17,7 @@ ifeq ($(OS),Windows_NT)
 else
     TARGET = Lexical
     FLEX = flex
-    RM_TMP = rm -f $(TMPDIR)/*
+    RM_TMP = rm -f $(TMPDIR)\*
     RM_EXE = rm -f
     MKDIR_EXE = mkdir -p $(OUT_EXE)
     MKDIR_TMP = mkdir -p $(TMPDIR)
@@ -30,7 +30,7 @@ dirs:
 	$(MKDIR_TMP)
 
 $(TARGET): $(LEX_C)
-	$(CC) $(INCLUDE) -o $(OUT_EXE)/$(TARGET) $(LEX_C)
+	$(CC) $(INCLUDE) -o $(OUT_EXE)\$(TARGET) $(LEX_C)
 
 $(LEX_C): $(SRC)
 	$(FLEX) -o $(LEX_C) $(SRC)

@@ -916,22 +916,22 @@ YY_RULE_SETUP
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 38 "pcode.l"
+#line 37 "pcode.l"
 { /* skip */ }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 39 "pcode.l"
+#line 38 "pcode.l"
 { /* comment */ }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 41 "pcode.l"
+#line 40 "pcode.l"
 { return yytext[0]; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 43 "pcode.l"
+#line 42 "pcode.l"
 ECHO;
 	YY_BREAK
 #line 937 "../output/tmp/lex.yy.c"
@@ -1951,5 +1951,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 43 "pcode.l"
+#line 42 "pcode.l"
 

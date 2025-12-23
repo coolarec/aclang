@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+void yyerror(const char* fmt, ...);
+
 extern int yylineno;
 extern char* yytext;
 int has_errors = 0;
@@ -148,7 +150,6 @@ int cur_while_begin() { return while_stack[while_top].begin; }
 int cur_while_end() { return while_stack[while_top].end; }
 
 extern int yylex(void);
-void yyerror(const char* s);
 
 %}
 %locations

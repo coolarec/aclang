@@ -34,8 +34,8 @@
     yylval.str = strdup(yytext); // 必须分配新空间
     return T_Identifier; 
 }
-[\n]          { yylineno++; }
-[ \t\r]       { /* skip */ }
+
+[ \t\r\n]       { /* skip */ }
 "//".*          { /* comment */ }
 
 .               { return yytext[0]; }

@@ -63,15 +63,18 @@
 
 /* Copy the first part of user declarations.  */
 /* Line 371 of yacc.c  */
-#line 1 "Pcode.y"
+#line 1 "pcode.y"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 
+void yyerror(const char* fmt, ...);
+
 extern int yylineno;
 extern char* yytext;
+int has_errors = 0;
 
 /* ========= 符号表 ========= */
 #define MAX_SCOPE 16
@@ -213,11 +216,10 @@ int cur_while_begin() { return while_stack[while_top].begin; }
 int cur_while_end() { return while_stack[while_top].end; }
 
 extern int yylex(void);
-void yyerror(const char* s);
 
 
 /* Line 371 of yacc.c  */
-#line 221 "y.tab.c"
+#line 223 "../output/tmp/y.tab.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -237,8 +239,8 @@ void yyerror(const char* s);
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_OUTPUT_TMP_Y_TAB_H_INCLUDED
+# define YY_YY_OUTPUT_TMP_Y_TAB_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 1
@@ -305,14 +307,14 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 155 "Pcode.y"
+#line 157 "pcode.y"
 
     int ival;
     char* str;
 
 
 /* Line 387 of yacc.c  */
-#line 316 "y.tab.c"
+#line 318 "../output/tmp/y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -348,12 +350,12 @@ int yyparse ();
 #endif
 #endif /* ! YYPARSE_PARAM */
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_OUTPUT_TMP_Y_TAB_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 357 "y.tab.c"
+#line 359 "../output/tmp/y.tab.c"
 
 #ifdef short
 # undef short
@@ -666,12 +668,12 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   185,   185,   185,   189,   190,   196,   195,   212,   213,
-     217,   218,   219,   223,   227,   231,   232,   236,   245,   253,
-     257,   265,   266,   267,   268,   269,   272,   277,   276,   289,
-     288,   302,   303,   304,   308,   309,   310,   314,   315,   316,
-     317,   318,   319,   320,   321,   322,   323,   324,   325,   326,
-     327,   328,   329,   330,   331
+       0,   187,   187,   187,   191,   192,   198,   197,   214,   215,
+     219,   220,   221,   225,   229,   233,   234,   238,   247,   255,
+     259,   267,   268,   269,   276,   277,   280,   285,   284,   297,
+     296,   310,   311,   312,   316,   317,   318,   322,   323,   329,
+     330,   331,   332,   333,   334,   335,   336,   337,   338,   339,
+     340,   341,   342,   343,   344
 };
 #endif
 
@@ -1779,19 +1781,19 @@ yyreduce:
     {
         case 2:
 /* Line 1792 of yacc.c  */
-#line 185 "Pcode.y"
+#line 187 "pcode.y"
     { enter_scope(); }
     break;
 
   case 3:
 /* Line 1792 of yacc.c  */
-#line 185 "Pcode.y"
+#line 187 "pcode.y"
     { leave_scope(); }
     break;
 
   case 6:
 /* Line 1792 of yacc.c  */
-#line 196 "Pcode.y"
+#line 198 "pcode.y"
     {
           insert_symbol((yyvsp[(1) - (3)].str), 0, 0);
           emit("LABEL %s", (yyvsp[(1) - (3)].str));
@@ -1801,7 +1803,7 @@ yyreduce:
 
   case 7:
 /* Line 1792 of yacc.c  */
-#line 202 "Pcode.y"
+#line 204 "pcode.y"
     {
           // 如果是 main 函数，生成 STOP，否则生成 RET
           if (strcmp((yyvsp[(1) - (8)].str), "main") == 0) 
@@ -1814,13 +1816,13 @@ yyreduce:
 
   case 13:
 /* Line 1792 of yacc.c  */
-#line 223 "Pcode.y"
+#line 225 "pcode.y"
     { insert_symbol((yyvsp[(2) - (2)].str), 2, 0); }
     break;
 
   case 17:
 /* Line 1792 of yacc.c  */
-#line 237 "Pcode.y"
+#line 239 "pcode.y"
     {
           int l_false = new_label();
           emit("JZ L%d", l_false);
@@ -1830,7 +1832,7 @@ yyreduce:
 
   case 18:
 /* Line 1792 of yacc.c  */
-#line 246 "Pcode.y"
+#line 248 "pcode.y"
     {
           int l_begin = new_label();
           emit("LABEL L%d", l_begin);
@@ -1840,7 +1842,7 @@ yyreduce:
 
   case 19:
 /* Line 1792 of yacc.c  */
-#line 254 "Pcode.y"
+#line 256 "pcode.y"
     {
           insert_symbol((yyvsp[(3) - (3)].str), 1, 0);
       }
@@ -1848,7 +1850,7 @@ yyreduce:
 
   case 20:
 /* Line 1792 of yacc.c  */
-#line 258 "Pcode.y"
+#line 260 "pcode.y"
     {
           insert_symbol((yyvsp[(1) - (1)].str), 1, 0);
       }
@@ -1856,31 +1858,36 @@ yyreduce:
 
   case 21:
 /* Line 1792 of yacc.c  */
-#line 265 "Pcode.y"
+#line 267 "pcode.y"
     { }
     break;
 
   case 22:
 /* Line 1792 of yacc.c  */
-#line 266 "Pcode.y"
+#line 268 "pcode.y"
     { }
     break;
 
   case 23:
 /* Line 1792 of yacc.c  */
-#line 267 "Pcode.y"
-    { emit("STO %s", (yyvsp[(1) - (4)].str)); }
+#line 270 "pcode.y"
+    { 
+        if(!is_symbol_defined((yyvsp[(1) - (4)].str))){
+            yyerror("Undefined variable '%s'\n",  (yyvsp[(1) - (4)].str));
+        }
+        emit("STO %s", (yyvsp[(1) - (4)].str)); 
+      }
     break;
 
   case 24:
 /* Line 1792 of yacc.c  */
-#line 268 "Pcode.y"
+#line 276 "pcode.y"
     { emit("CALL %s", (yyvsp[(1) - (5)].str)); }
     break;
 
   case 26:
 /* Line 1792 of yacc.c  */
-#line 273 "Pcode.y"
+#line 281 "pcode.y"
     {
           emit("LABEL L%d", (yyvsp[(1) - (2)].ival));
       }
@@ -1888,7 +1895,7 @@ yyreduce:
 
   case 27:
 /* Line 1792 of yacc.c  */
-#line 277 "Pcode.y"
+#line 285 "pcode.y"
     {
           int l_end = new_label();
           emit("JMP L%d", l_end);
@@ -1899,7 +1906,7 @@ yyreduce:
 
   case 28:
 /* Line 1792 of yacc.c  */
-#line 284 "Pcode.y"
+#line 292 "pcode.y"
     {
           emit("LABEL L%d", (yyvsp[(4) - (5)].ival));
       }
@@ -1907,7 +1914,7 @@ yyreduce:
 
   case 29:
 /* Line 1792 of yacc.c  */
-#line 289 "Pcode.y"
+#line 297 "pcode.y"
     {
           int l_end = new_label();
           emit("JZ L%d", l_end);
@@ -1918,7 +1925,7 @@ yyreduce:
 
   case 30:
 /* Line 1792 of yacc.c  */
-#line 296 "Pcode.y"
+#line 304 "pcode.y"
     {
           emit("JMP L%d", (yyvsp[(1) - (6)].ival));
           emit("LABEL L%d", (yyvsp[(5) - (6)].ival));
@@ -1928,133 +1935,138 @@ yyreduce:
 
   case 31:
 /* Line 1792 of yacc.c  */
-#line 302 "Pcode.y"
+#line 310 "pcode.y"
     { if(while_top<0) yyerror("break loop"); else emit("JMP L%d", cur_while_end()); }
     break;
 
   case 32:
 /* Line 1792 of yacc.c  */
-#line 303 "Pcode.y"
+#line 311 "pcode.y"
     { if(while_top<0) yyerror("cont loop"); else emit("JMP L%d", cur_while_begin()); }
     break;
 
   case 33:
 /* Line 1792 of yacc.c  */
-#line 304 "Pcode.y"
+#line 312 "pcode.y"
     { emit("OUT"); }
     break;
 
   case 37:
 /* Line 1792 of yacc.c  */
-#line 314 "Pcode.y"
+#line 322 "pcode.y"
     { emit("LIT %d", (yyvsp[(1) - (1)].ival)); }
     break;
 
   case 38:
 /* Line 1792 of yacc.c  */
-#line 315 "Pcode.y"
-    { emit("LOD %s", (yyvsp[(1) - (1)].str)); }
+#line 323 "pcode.y"
+    { 
+        if(!is_symbol_defined((yyvsp[(1) - (1)].str))){
+            yyerror("Undefined variable '%s'\n", (yyvsp[(1) - (1)].str));
+        }
+        emit("LOD %s", (yyvsp[(1) - (1)].str));
+    }
     break;
 
   case 39:
 /* Line 1792 of yacc.c  */
-#line 316 "Pcode.y"
+#line 329 "pcode.y"
     { emit("CALL %s", (yyvsp[(1) - (4)].str)); }
     break;
 
   case 40:
 /* Line 1792 of yacc.c  */
-#line 317 "Pcode.y"
+#line 330 "pcode.y"
     { emit("IN"); }
     break;
 
   case 41:
 /* Line 1792 of yacc.c  */
-#line 318 "Pcode.y"
+#line 331 "pcode.y"
     { emit("ADD"); }
     break;
 
   case 42:
 /* Line 1792 of yacc.c  */
-#line 319 "Pcode.y"
+#line 332 "pcode.y"
     { emit("SUB"); }
     break;
 
   case 43:
 /* Line 1792 of yacc.c  */
-#line 320 "Pcode.y"
+#line 333 "pcode.y"
     { emit("MUL"); }
     break;
 
   case 44:
 /* Line 1792 of yacc.c  */
-#line 321 "Pcode.y"
+#line 334 "pcode.y"
     { emit("DIV"); }
     break;
 
   case 45:
 /* Line 1792 of yacc.c  */
-#line 322 "Pcode.y"
+#line 335 "pcode.y"
     { emit("EQ"); }
     break;
 
   case 46:
 /* Line 1792 of yacc.c  */
-#line 323 "Pcode.y"
+#line 336 "pcode.y"
     { emit("NE"); }
     break;
 
   case 47:
 /* Line 1792 of yacc.c  */
-#line 324 "Pcode.y"
+#line 337 "pcode.y"
     { emit("LT"); }
     break;
 
   case 48:
 /* Line 1792 of yacc.c  */
-#line 325 "Pcode.y"
+#line 338 "pcode.y"
     { emit("GT"); }
     break;
 
   case 49:
 /* Line 1792 of yacc.c  */
-#line 326 "Pcode.y"
+#line 339 "pcode.y"
     { emit("LE"); }
     break;
 
   case 50:
 /* Line 1792 of yacc.c  */
-#line 327 "Pcode.y"
+#line 340 "pcode.y"
     { emit("GE"); }
     break;
 
   case 51:
 /* Line 1792 of yacc.c  */
-#line 328 "Pcode.y"
+#line 341 "pcode.y"
     { emit("OR"); }
     break;
 
   case 52:
 /* Line 1792 of yacc.c  */
-#line 329 "Pcode.y"
+#line 342 "pcode.y"
     { emit("AND"); }
     break;
 
   case 53:
 /* Line 1792 of yacc.c  */
-#line 330 "Pcode.y"
+#line 343 "pcode.y"
     { emit("POW"); }
     break;
 
   case 54:
 /* Line 1792 of yacc.c  */
-#line 331 "Pcode.y"
+#line 344 "pcode.y"
     { (yyval.ival) = (yyvsp[(2) - (3)].ival);  }
     break;
 
 
 /* Line 1792 of yacc.c  */
-#line 2058 "y.tab.c"
+#line 2070 "../output/tmp/y.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2293,21 +2305,35 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 334 "Pcode.y"
+#line 347 "pcode.y"
 
 
 
 int main() {
-    return yyparse();
+    has_errors |= yyparse();
+    return has_errors;
 }
-void yyerror(const char* s)
+// 增强版 yyerror
+void yyerror(const char* fmt, ...)
 {
-    fprintf(stderr,
-        "Syntax error at %d:%d - %d:%d, near '%s'\n",
-        yylloc.first_line,
-        yylloc.first_column,
-        yylloc.last_line,
-        yylloc.last_column,
-        yytext
-    );
+    has_errors = 1;
+    va_list args;
+    
+    // 打印位置信息
+    fprintf(stderr, "EEEOR at line %d", yylineno);
+    if (yylloc.first_line != yylloc.last_line) {
+        fprintf(stderr, " to %d", yylloc.last_line);
+    }
+    fprintf(stderr, ": ");
+    
+    // 打印提供的错误信息
+    va_start(args, fmt);
+    vfprintf(stderr, fmt, args);
+    va_end(args);
+    
+    // 可选：打印附近的token
+    if (yytext && yytext[0] != '\0') {
+        fprintf(stderr, " (near '%s')", yytext);
+    }
+    fprintf(stderr, "\n");
 }

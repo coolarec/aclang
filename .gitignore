@@ -1,2 +1,4 @@
 win_flex_bison-latest/*
 lex.exe
+output/exe/*
+output/file/*

@@ -70,10 +70,10 @@ $(LEX_C): $(LEX_SRC) $(YACC_H)
 clean:
 ifeq ($(OS),Windows_NT)
 	@if exist "$(TMP_DIR)" $(RD) "$(TMP_DIR)"
-# 	@if exist "$(OUTPUT)" $(RM) "$(OUTPUT)"
+	@if exist "$(LEX_C)" $(RM) "$(LEX_C)"
 else
-	$(RD) $(TMP_DIR)
-# 	$(RM) $(OUTPUT)
+	$(RMDIR) $(TMP_DIR)
+	$(RM) $(LEX_C)
 endif
 
 # 彻底清理（包括输出目录）

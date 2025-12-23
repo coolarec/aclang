@@ -59,10 +59,10 @@ $(LEX_C): $(SRC)
 clean:
 ifeq ($(OS),Windows_NT)
 	@if exist "$(TMP_DIR)" $(RM) "$(TMP_DIR)$(S)*"
-# 	@if exist "$(OUTPUT)" $(RM) "$(OUTPUT)"
+	@if exist "$(LEX_C)" $(RM) "$(LEX_C)"
 else
 	$(RM) $(TMP_DIR)$(S)*
-# 	$(RM) $(OUTPUT)
+	$(RM) $(LEX_C)
 endif
 
 # 深度清理

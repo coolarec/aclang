@@ -163,7 +163,8 @@ extern int yylex(void);
 %right '!'
 %left T_Power
 
-%type <ival> expr if_prefix while_label 
+%type <ival>  if_prefix while_label 
+%type <str> expr
 
 %%
 
@@ -182,17 +183,19 @@ function
     : T_Identifier T_Explain dtype 
       {
           insert_symbol($1, 0, 0);
-          emit("LABEL %s", $1);
+          emit("FUNC @%s", $1);
           enter_scope();
       }
       '(' param_list ')' compound_stmt
       {
           // 如果是 main 函数，生成 STOP，否则生成 RET
+        
           if (strcmp($1, "main") == 0) 
               emit("STOP");
           else 
               emit("RET");
           leave_scope();
+          emit("END FUNC\n", $1);
       }
     ;
 dtype 
@@ -210,7 +213,7 @@ param
     : T_Int T_Identifier 
       { 
         insert_symbol($2, 2, 0);
-        emit("INT %s",$2); 
+        emit("ARG %s",$2); 
       }
     ;
 
@@ -304,8 +307,8 @@ stmt
     ;
 
 arg_list
-    : arg_list ',' expr
-    | expr
+    : arg_list ',' expr 
+    | expr 
     | /* empty */
     ;
 
@@ -317,7 +320,12 @@ expr
         }
         emit("LOD %s", $1);
     }
-    | T_Identifier '(' arg_list ')' { emit("CALL %s", $1); }
+    | T_Identifier '(' arg_list ')' {
+        if(!is_symbol_defined($1)){
+            yyerror("Undefined Function '%s'\n", $1);
+        }
+        emit("CALL %s", $1); 
+    }
     | T_inputInt '(' ')'     { emit("IN"); }
     | expr '+' expr          { emit("ADD"); }
     | expr '-' expr          { emit("SUB"); }

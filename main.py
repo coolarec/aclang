@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 import json
 from flask_cors import CORS
 import sys
-
+from model import PcodeToQuadsTranslator
 
 def is_windows():
     return sys.platform.startswith("win")
@@ -90,11 +90,15 @@ def getPcode():
 
         # 检查返回码
         if result.returncode == 0:
-            data = list(map(str,result.stdout.split('\n')))
+            data = result.stdout
+            print(data)
+            pt= PcodeToQuadsTranslator()
+            print(pt.translate(data))
             return jsonify({
                 "success": True,
                 "code_length": len(source_code),
-                "pcode": data,
+                "pcode": list(map(str,data.split('\n'))),
+                "quads":json.loads(json.dumps(pt.translate(data)))
             })
         else:
             # 失败 - stderr可能包含错误信息

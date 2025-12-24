@@ -358,7 +358,12 @@ expr
         }
         emit("LOD %s", $1);
     }
-    | T_Identifier '(' arg_list ')' { emit("CALL %s", $1); }
+    | T_Identifier '(' arg_list ')'{ 
+        if(!is_symbol_defined($1)){
+            yyerror("Undefined Function '%s'\n", $1);
+        }
+        emit("CALL %s", $1); 
+    }
     | T_inputInt '(' ')'     { emit("IN"); }
     | expr '+' expr          { emit("ADD"); }
     | expr '-' expr          { emit("SUB"); }

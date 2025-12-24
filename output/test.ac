@@ -1,4 +1,10 @@
+foo:int(int a,int b){
+    return 1;
+}
 main : int () {
     int a,b,c,d;
-    d=a*b+c;
+    while(a>b && c>d){
+        if(a>c){
+        b=b+1;}
+    }
 }

@@ -397,49 +397,49 @@ class PcodeToQuadsTranslator:
         
         print("\n" + "=" * 60)
 
-pt=PcodeToQuadsTranslator()
-pt.translate('''FUNC @foo
-ARG a
-ARG b
-LIT 1
-RET
-END FUNC
+# pt=PcodeToQuadsTranslator()
+# pt.translate('''FUNC @foo
+# ARG a
+# ARG b
+# LIT 1
+# RET
+# END FUNC
 
-FUNC @main
-INT a
-INT b
-INT c
-INT d
-LOD b
-LOD c
-ADD
-STO a
-LOD c
-LOD d
-ADD
-STO a
-LOD d
-LOD c
-ADD
-STO b
-LABEL L0
-LOD b
-LIT 0
-GT
-JZ L1
-LOD a
-LOD b
-ADD
-STO a
-LOD a
-LOD d
-SUB
-STO b
-JMP L1
-JMP L0
-LABEL L1
-LIT 0
-STOP
-END FUNC
-''')
-pt.print_result()
+# FUNC @main
+# INT a
+# INT b
+# INT c
+# INT d
+# LOD b
+# LOD c
+# ADD
+# STO a
+# LOD c
+# LOD d
+# ADD
+# STO a
+# LOD d
+# LOD c
+# ADD
+# STO b
+# LABEL L0
+# LOD b
+# LIT 0
+# GT
+# JZ L1
+# LOD a
+# LOD b
+# ADD
+# STO a
+# LOD a
+# LOD d
+# SUB
+# STO b
+# JMP L1
+# JMP L0
+# LABEL L1
+# LIT 0
+# STOP
+# END FUNC
+# ''')
+# pt.print_result()

@@ -30,8 +30,8 @@ OUT_EXE_DIR = ..$(S)output$(S)exe
 TMP_DIR     = ..$(S)output$(S)tmp
 
 # 4. 文件路径定义
-LEX_SRC  = $(FILENAME).l
-YACC_SRC = $(FILENAME).y
+LEX_SRC  = lex.l
+YACC_SRC = parser.y
 
 LEX_C    = lex.yy.c
 YACC_C   = $(TMP_DIR)$(S)y.tab.c
@@ -53,7 +53,7 @@ dirs:
 
 # 链接阶段：将生成的两个 C 文件编译为可执行文件
 $(OUTPUT): $(LEX_C) $(YACC_C)
-	$(CC) -I. -I$(TMP_DIR) -o "$(OUTPUT)" "$(LEX_C)" "$(YACC_C)"
+	$(CC) -I. -I$(TMP_DIR) -o "$(OUTPUT)" "$(LEX_C)" "$(YACC_C)" ast.c
 
 # Bison 阶段：生成 y.tab.c 和 y.tab.h
 # -d: 生成头文件, -v: 生成 y.output, -y: yacc 兼容模式(生成 y.tab.c)

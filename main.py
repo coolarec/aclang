@@ -45,7 +45,7 @@ def get_keyword():
         "T_inputInt": "输入整数函数",
         "T_outputInt": "输出整数函数",
         "T_Power": "幂运算函数"
-    });
+    })
 
 
 @app.route("/check", methods=["POST"])

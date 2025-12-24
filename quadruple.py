@@ -20,8 +20,15 @@ class Quadruple:
         return (self.op, self.arg1, self.arg2, self.result)
 
 class PcodeToQuadsTranslator:
+    """Pcode到四元式转换器"""
     
     def __init__(self, optimize=False):
+        """
+        初始化转换器
+        
+        Args:
+            optimize: 是否进行优化
+        """
         self.quads = []  # 主程序四元式列表
         self.func_quads = {}  # 函数四元式字典 {函数名: [四元式列表]}
         self.current_func = None  # 当前处理的函数名
@@ -44,18 +51,30 @@ class PcodeToQuadsTranslator:
         return label
     
     def add_quad(self, op, arg1, arg2, result):
+        """
+        添加一个四元式到当前作用域
+        
+        Args:
+            op: 操作符
+            arg1: 操作数1
+            arg2: 操作数2
+            result: 结果
+        """
         quad = Quadruple(op, arg1, arg2, result)
         
         if self.current_func:
+            # 添加到当前函数
             if self.current_func not in self.func_quads:
                 self.func_quads[self.current_func] = []
             self.func_quads[self.current_func].append(quad)
         else:
+            # 添加到主程序
             self.quads.append(quad)
         
         return quad
 
     def clear(self):
+        """清除所有状态"""
         self.quads.clear()
         self.func_quads.clear()
         self.current_func = None
@@ -65,6 +84,15 @@ class PcodeToQuadsTranslator:
         self.arg_stack.clear()
     
     def translate(self, pcode_code):
+        """
+        翻译Pcode代码为四元式
+        
+        Args:
+            pcode_code: Pcode代码字符串
+            
+        Returns:
+            dict: 包含四元式的字典
+        """
         self.clear()
         lines = pcode_code.strip().split('\n')
         
@@ -327,9 +355,66 @@ class PcodeToQuadsTranslator:
             print(f"警告: 未知指令 '{instr}'")
 
     def get_result(self):
+        """
+        获取翻译结果
+        
+        Returns:
+            dict: 包含所有四元式的字典
+        """
         return {
             'functions': {
                 func_name: [quad.to_tuple() for quad in quads]
                 for func_name, quads in self.func_quads.items()
             }
-        } 
+        }   
+
+    # def print_result(self):
+    #     """打印翻译结果"""
+    #     print("=" * 60)
+    #     print("PCODE 到 四元式 转换结果")
+    #     print("=" * 60)
+        
+    #     print("\n主程序四元式:")
+    #     print("-" * 50)
+
+    #     if self.func_quads:
+    #         print("\n函数四元式:")
+    #         for func_name, quads in self.func_quads.items():
+    #             print(f"\n函数 {func_name}:")
+    #             print("-" * 40)
+    #             for i, quad in enumerate(quads, 1):
+    #                 print(f"{i:4d}: {quad}")
+        
+    #     for i, quad in enumerate(self.quads, 1):
+    #         print(f"{i:4d}: {quad}")
+        
+        
+    #     if self.symbol_table:
+    #         print("\n符号表:")
+    #         print("-" * 30)
+    #         for name, type_info in self.symbol_table.items():
+    #             print(f"{name}: {type_info}")
+        
+    #     print("\n" + "=" * 60)
+
+# pt=PcodeToQuadsTranslator()
+# pt.translate('''FUNC @foo
+# ARG a
+# ARG b
+# LIT 1
+# RET
+# END FUNC
+
+# FUNC @main
+# INT a
+# INT b
+# INT c
+# INT d
+# LOD b
+# LOD c
+# ADD
+# STO a
+# LIT 0
+# STOP
+# END FUNC''')
+# pt.print_result()

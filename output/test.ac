@@ -3,8 +3,8 @@ foo:int(int a,int b){
 }
 main : int () {
     int a,b,c,d;
-    while(a>b && c>d){
-        if(a>c){
-        b=b+1;}
-    }
+    a=b+c;
+    a=c+d;
+    b=d+c;
+    return 0;
 }

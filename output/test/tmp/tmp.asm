@@ -20,7 +20,7 @@ main:
     push qword [rbp - 512]
     pop rax
     mov [rbp - 8], rax
-    push 2134
+    push qword [rbp - 8]
     pop rdx
     lea rcx, [fmt_out]
     sub rsp, 32

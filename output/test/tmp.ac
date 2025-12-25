@@ -1,6 +1,6 @@
-main:int(){
+main:int()
+{
     int a;
     a=inputInt();
-    outputInt(2134);
     return 0;
 }

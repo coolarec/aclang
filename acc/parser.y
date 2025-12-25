@@ -10,11 +10,30 @@ int has_errors = 0;
 
 /* ========= 跨平台系统识别与 ABI 适配 ========= */
 #if defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
+    /* Windows x64 (Microsoft x64 ABI) */
     #define OS_NAME "Windows (x64 ABI)"
     #define ARG1 "rcx"
     #define ARG2 "rdx"
     #define SHADOW_SPACE 32
+
+#elif defined(__APPLE__) && defined(__MACH__) && defined(__i386__)
+    /* macOS 32-bit (Mach-O i386 ABI) */
+    /* 注意：标准 i386 cdecl 使用栈传参。
+       如果你的编译器逻辑需要寄存器名，这里使用 eax/edx 作为通用占位 */
+    #define OS_NAME "macOS Mach-O (32-bit i386)"
+    #define ARG1 "eax" 
+    #define ARG2 "edx"
+    #define SHADOW_SPACE 0
+
+#elif defined(__APPLE__) && defined(__MACH__) && defined(__x86_64__)
+    /* macOS 64-bit (System V ABI) */
+    #define OS_NAME "macOS (System V ABI x64)"
+    #define ARG1 "rdi"
+    #define ARG2 "rsi"
+    #define SHADOW_SPACE 0
+
 #else
+    /* Linux/Unix (System V ABI) */
     #define OS_NAME "Linux (System V ABI)"
     #define ARG1 "rdi"
     #define ARG2 "rsi"

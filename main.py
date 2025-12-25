@@ -193,7 +193,7 @@ def getAST():
     except Exception as e:
         return jsonify({"success": False, "error": f"服务器内部错误: {str(e)}"}), 500
 
-@app.route("/asm", methods=["POST"])
+@app.route("/asm", methods=["POST"],strict_slashes=False)
 def getASM():
     try:
         source_code = request.json['code']
@@ -241,9 +241,9 @@ def getResult():
         with open("./output/test/tmp.ac","w") as f:
             f.write(source_code)
         
-        input_str=''
-        input_str = request.json.get('input', '')
-
+        input_str = request.json.get('input_str', '')
+        print("=========================================== ")
+        print(input_str)
         ac_file = "tmp.ac"
         workdir = "./output/test"
 

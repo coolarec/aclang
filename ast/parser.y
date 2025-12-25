@@ -277,7 +277,7 @@ param_list
     | /* empty */
       {
           $$ = ast_new(AST_PARAM_LIST, "param_list");
-          ast_add($$, ast_new(AST_NULL,"∅"));
+          ast_add($$, ast_new(AST_NULL,"empty set"));
       }
     ;
 
@@ -313,7 +313,7 @@ stmt_list
     | /* empty */
       {
           $$ = ast_new(AST_STMT_LIST, "stmt_list");
-          ast_add($$, ast_new(AST_NULL,"∅"));
+          ast_add($$, ast_new(AST_NULL,"empty set"));
       }
     ;
 
@@ -405,7 +405,7 @@ stmt
 
     | while_label '(' expr ')' stmt
     {
-        AST* while_node = ast_new(AST_WHILE, NULL);
+        AST* while_node = ast_new(AST_WHILE, "while lable");
         ast_add(while_node, $3);  /* condition */
         ast_add(while_node, $5);  /* body */
 
@@ -436,32 +436,54 @@ stmt
 arg_list
     : arg_list ',' expr
       {
-          $$ = ast_new(AST_ARG_LIST, NULL);
+          $$ = ast_new(AST_ARG_LIST, "arg_list");
           ast_add($$, $1);     /* 之前的参数列表 */
           ast_add($$, ast_new(AST_PUNCT, ",")); /* 保留逗号 */
           ast_add($$, $3);     /* 新参数 */
       }
     | expr
       {
-          $$ = ast_new(AST_ARG_LIST, NULL);
+          $$ = ast_new(AST_ARG_LIST, "arg_list");
           ast_add($$, $1);
       }
     | /* empty */
       {
-          $$ = ast_new(AST_ARG_LIST, NULL);
-          ast_add($$, ast_new(AST_NULL,"∅"));
+          $$ = ast_new(AST_ARG_LIST, "arg_list");
+          ast_add($$, ast_new(AST_NULL,"empty set"));
       }
     ;
-
 
 
 expr
     : T_IntConstant
       {
-          $$ = ast_new(AST_EXPR, "EXPR");
+          $$ = ast_new(AST_EXPR, "expr");
           char buff[10] = {0};
           my_itoa($1,buff);
-          ast_add($$,ast_new(AST_INT_CONST,buff));
+          // printf("%s",buff);
+          ast_add($$,ast_new(AST_INT_CONST,strdup(buff)));
+      }
+    | T_inputInt '(' ')'
+      {
+          $$ = ast_new(AST_INPUT, "input");
+          ast_add($$, ast_new(AST_PUNCT, "("));
+          ast_add($$, ast_new(AST_PUNCT, ")"));
+      }
+    | T_outputInt '(' T_Identifier ')'
+      {
+          $$ = ast_new(AST_EXPR, "output");
+          ast_add($$, ast_new(AST_PUNCT, "("));
+          ast_add($$, ast_new(AST_IDENTIFIER, $3));   /* 参数列表 */
+          ast_add($$, ast_new(AST_PUNCT, ")"));
+      }
+    | T_outputInt '(' T_IntConstant ')'
+      {
+          $$ = ast_new(AST_INPUT, "output");
+          ast_add($$, ast_new(AST_PUNCT, "("));
+          char buff[20];
+          my_itoa($3,buff);
+          ast_add($$, ast_new(AST_INT_CONST, strdup(buff)));   /* 参数列表 */
+          ast_add($$, ast_new(AST_PUNCT, ")"));
       }
     | T_Identifier
       {
@@ -470,21 +492,6 @@ expr
           }
           $$ = ast_new(AST_EXPR, "EXPR");
           ast_add($$,ast_new(AST_IDENTIFIER, $1));
-      }
-    | T_Identifier '(' arg_list ')'
-      {
-          if(!is_symbol_defined($1)){
-              yyerror("Undefined function '%s'\n", $1);
-          }
-          $$ = ast_new(AST_EXPR, "EXPR");
-          ast_add($$, ast_new(AST_FUNC_CALL, $1));
-          ast_add($$, ast_new(AST_PUNCT, "("));
-          ast_add($$, $3);   /* 参数列表 */
-          ast_add($$, ast_new(AST_PUNCT, ")"));
-      }
-    | T_inputInt '(' ')'
-      {
-          $$ = ast_new(AST_INPUT, "input");
       }
     | expr '+' expr
       {

@@ -9,6 +9,7 @@ $(SUBDIRS):
 
 clean:
 	$(MAKE) -C flex clean
-	$(MAKE) -C syntax clean
-	$(MAKE) -C semantic clean
+	$(MAKE) -C symbol_table clean
+	$(MAKE) -C ast clean
 	$(MAKE) -C pcode clean
+	$(MAKE) -C acc clean

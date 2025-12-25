@@ -4,7 +4,7 @@ import json
 from flask_cors import CORS
 import sys
 from quadruple import PcodeToQuadsTranslator
-
+import os
 def is_windows():
     return sys.platform.startswith("win")
 
@@ -210,6 +210,83 @@ def getASM():
         if result.returncode == 0:
             data = result.stdout
             print(data)
+            # pt= PcodeToQuadsTranslator()
+            # print(pt.translate(data))
+            return jsonify({
+                "success": True,
+                "code": len(source_code),
+                "data": data,
+            })
+        else:
+            # 失败 - stderr可能包含错误信息
+            error_message = result.stderr if result.stderr else "编译过程出错"
+            return jsonify({
+                "success": False,
+                "error": error_message,
+                "returncode": result.returncode,
+                "raw_stderr": result.stderr,
+                "raw_stdout": json.loads(result.stdout)
+            }), 400
+    except KeyError:
+        return jsonify({"success": False, "error": "缺少code字段"}), 400
+    except subprocess.TimeoutExpired:
+        return jsonify({"success": False, "error": "处理超时"}), 408
+    except Exception as e:
+        return jsonify({"success": False, "error": f"服务器内部错误: {str(e)}"}), 500
+
+@app.route("/run", methods=["POST"])
+def getResult():
+    try:
+        source_code = request.json['code']
+        with open("./output/test/tmp.ac","w") as f:
+            f.write(source_code)
+        input_str=request.json['input']
+
+        ac_file = "tmp.ac"
+        workdir = "./output/test"
+
+        if sys.platform.startswith("win"):
+            # Windows → PowerShell
+            cmd = [
+                "powershell",
+                "-ExecutionPolicy", "Bypass",
+                "-File", "build.ps1",
+                ac_file
+            ]
+        else:
+            # Linux / macOS / WSL → bash
+            cmd = [
+                "bash",
+                "build.sh",
+                ac_file
+            ]
+
+        result = subprocess.run(
+            cmd,
+            cwd=workdir,
+            capture_output=True,
+            text=True
+        )
+        print( os.getcwd())
+        print("./output/test/tmp"+(".exe" if is_windows() else ""))
+        
+        result = subprocess.run(
+            ["./output/test/tmp/tmp"+(".exe" if is_windows() else "")],
+            input=input_str,
+            text=True,
+            encoding="utf-8",
+            capture_output=True,
+            timeout=10  # 添加超时防止卡死
+        )
+        # return jsonify({
+        #     "stdout": result.stdout,
+        #     "stderr": result.stderr,
+        #     "returncode": result.returncode
+        # })
+        # # 检查返回码
+        if result.returncode == 0:
+            data = result.stdout
+            # print(data)
             # pt= PcodeToQuadsTranslator()
             # print(pt.translate(data))
             return jsonify({

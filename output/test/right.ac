@@ -1,0 +1,7 @@
+main : int () {
+    int a;
+    a=3;
+    outputInt(998244353);
+    outputInt(a**3);
+    return 0;
+}

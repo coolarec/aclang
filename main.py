@@ -240,7 +240,9 @@ def getResult():
         source_code = request.json['code']
         with open("./output/test/tmp.ac","w") as f:
             f.write(source_code)
-        input_str=request.json['input']
+        
+        input_str=''
+        input_str = request.json.get('input', '')
 
         ac_file = "tmp.ac"
         workdir = "./output/test"
@@ -269,7 +271,7 @@ def getResult():
         )
         print( os.getcwd())
         print("./output/test/tmp"+(".exe" if is_windows() else ""))
-        
+
         result = subprocess.run(
             ["./output/test/tmp/tmp"+(".exe" if is_windows() else "")],
             input=input_str,

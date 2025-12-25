@@ -1,1 +1,6 @@
-main:int(){outputInt(2134);return 0;}
+main:int(){
+    int a;
+    a=inputInt();
+    outputInt(2134);
+    return 0;
+}

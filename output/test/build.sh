@@ -52,14 +52,50 @@ echo "  >> Success: Created $ASM_FILE"
 # ---------------------------------------------------------
 # 3. Step 2: NASM 汇编
 # ---------------------------------------------------------
-echo "[STEP 2] Assembling with NASM (win64)..."
+echo "[STEP 2] Assembling with NASM..."
 
-if ! nasm -f win64 "$ASM_FILE" -o "$OBJ_FILE"; then
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+FMT=""
+
+case "$OS" in
+    MINGW*|MSYS*|CYGWIN*)
+        if [[ "$ARCH" == "x86_64" ]]; then
+            FMT="win64"
+        else
+            FMT="win32"
+        fi
+        ;;
+    Linux)
+        if [[ "$ARCH" == "x86_64" ]]; then
+            FMT="elf64"
+        else
+            FMT="elf32"
+        fi
+        ;;
+    Darwin)
+        if [[ "$ARCH" == "x86_64" ]]; then
+            FMT="macho64"
+        else
+            FMT="macho32"
+        fi
+        ;;
+    *)
+        echo "[CRITICAL ERROR] Unsupported OS: $OS"
+        exit 1
+        ;;
+esac
+
+echo "  >> NASM format: $FMT"
+
+if ! nasm -f "$FMT" "$ASM_FILE" -o "$OBJ_FILE"; then
     echo "[CRITICAL ERROR] NASM Assembly failed"
     exit 1
 fi
 
 echo "  >> Success: Created $OBJ_FILE"
+
 
 # ---------------------------------------------------------
 # 4. Step 3: GCC 链接

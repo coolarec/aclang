@@ -1,28 +1,27 @@
 %{
-#include "ast.h"
-#include "y.tab.h"
 #include <string.h>
 #include <stdlib.h>
+#include "y.tab.h"
 %}
 
-%option noyywrap
 %option yylineno
 
 %%
-
 "int"           { return T_Int; }
+"void"          { return T_Void; }
+"while"         { return T_While; }
 "if"            { return T_If; }
 "else"          { return T_Else; }
-"while"         { return T_While; }
 "return"        { return T_Return; }
 "break"         { return T_Break; }
 "continue"      { return T_Continue; }
-"void"          { return T_Void; }
-":"             { return T_Explain; }
-
+"explain"       { return T_Explain; }
 "inputInt"      { return T_inputInt; }
 "outputInt"     { return T_outputInt; }
 
+[0-9]+          { yylval.ival = atoi(yytext); return T_IntConstant; }
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.str = strdup(yytext); return T_Identifier; }
+":"             { return T_Explain; }
 "=="            { return T_Eq; }
 "!="            { return T_Ne; }
 "<="            { return T_Le; }
@@ -30,14 +29,12 @@
 "&&"            { return T_And; }
 "||"            { return T_Or; }
 "**"            { return T_Power; }
-[0-9]+          { yylval.ival = atoi(yytext); return T_IntConstant; }
-[a-zA-Z_][a-zA-Z0-9_]* { 
-    yylval.str = strdup(yytext); // 必须分配新空间
-    return T_Identifier; 
-}
-[ \t\r\n]       { /* skip */ }
-"//".*          { /* comment */ }
 
-.               { return yytext[0]; }
+"+"|"-"|"*"|"/"|"<"|">"|"="|"("|")"|"{"|"}"|","|";"|":" { return yytext[0]; }
+
+"//".*          { /* 忽略单行注释 */ }
+[ \t\n\r]+      { /* 忽略空白 */ }
+.               { fprintf(stderr, "Lexer Error: Unknown char %s\n", yytext); }
 
 %%
+int yywrap() { return 1; }

@@ -136,6 +136,37 @@ int cur_while_end() { return while_stack[while_top].end; }
 AST* root=NULL;
 
 extern int yylex(void);
+
+void my_itoa(int x, char *s) {
+    int i = 0;
+    int neg = 0;
+
+    if (x == 0) {
+        s[i++] = '0';
+        s[i] = '\0';
+        return;
+    }
+
+    if (x < 0) {
+        neg = 1;
+        x = -x;
+    }
+
+    while (x > 0) {
+        s[i++] = x % 10 + '0';
+        x /= 10;
+    }
+
+    if (neg) s[i++] = '-';
+    s[i] = '\0';
+
+    for (int l = 0, r = i - 1; l < r; l++, r--) {
+        char t = s[l];
+        s[l] = s[r];
+        s[r] = t;
+    }
+}
+
 %}
 %locations
 
@@ -429,7 +460,7 @@ expr
       {
           $$ = ast_new(AST_EXPR, "EXPR");
           char buff[10] = {0};
-          itoa($1,buff,10);
+          my_itoa($1,buff);
           ast_add($$,ast_new(AST_INT_CONST,buff));
       }
     | T_Identifier

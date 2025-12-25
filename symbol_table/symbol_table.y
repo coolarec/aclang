@@ -378,7 +378,7 @@ expr
     | expr T_Or expr         { emit("OR"); }
     | expr T_And expr        { emit("AND"); }
     | expr T_Power expr      { emit("POW"); }
-    | '(' expr ')'           { $$ = $2;  }
+    | '(' expr ')'           { }
     ;
 
 %%

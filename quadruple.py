@@ -368,34 +368,34 @@ class PcodeToQuadsTranslator:
             }
         }   
 
-    def print_result(self):
-        """打印翻译结果"""
-        print("=" * 60)
-        print("PCODE 到 四元式 转换结果")
-        print("=" * 60)
+    # def print_result(self):
+    #     """打印翻译结果"""
+    #     print("=" * 60)
+    #     print("PCODE 到 四元式 转换结果")
+    #     print("=" * 60)
         
-        print("\n主程序四元式:")
-        print("-" * 50)
+    #     print("\n主程序四元式:")
+    #     print("-" * 50)
 
-        if self.func_quads:
-            print("\n函数四元式:")
-            for func_name, quads in self.func_quads.items():
-                print(f"\n函数 {func_name}:")
-                print("-" * 40)
-                for i, quad in enumerate(quads, 1):
-                    print(f"{i:4d}: {quad}")
+    #     if self.func_quads:
+    #         print("\n函数四元式:")
+    #         for func_name, quads in self.func_quads.items():
+    #             print(f"\n函数 {func_name}:")
+    #             print("-" * 40)
+    #             for i, quad in enumerate(quads, 1):
+    #                 print(f"{i:4d}: {quad}")
         
-        for i, quad in enumerate(self.quads, 1):
-            print(f"{i:4d}: {quad}")
+    #     for i, quad in enumerate(self.quads, 1):
+    #         print(f"{i:4d}: {quad}")
         
         
-        if self.symbol_table:
-            print("\n符号表:")
-            print("-" * 30)
-            for name, type_info in self.symbol_table.items():
-                print(f"{name}: {type_info}")
+    #     if self.symbol_table:
+    #         print("\n符号表:")
+    #         print("-" * 30)
+    #         for name, type_info in self.symbol_table.items():
+    #             print(f"{name}: {type_info}")
         
-        print("\n" + "=" * 60)
+    #     print("\n" + "=" * 60)
 
 # pt=PcodeToQuadsTranslator()
 # pt.translate('''FUNC @foo

@@ -234,18 +234,19 @@ dtype
 param_list
     : param_list ',' param
       {
-          $$ = ast_new(AST_STMT_LIST, NULL);
+          $$ = ast_new(AST_STMT_LIST, "param_list");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | param
       {
-          $$ = ast_new(AST_PARAM_LIST, NULL);
+          $$ = ast_new(AST_PARAM_LIST, "param_list");
           ast_add($$, $1);
       }
     | /* empty */
       {
-          $$ = ast_new(AST_PARAM_LIST, NULL);
+          $$ = ast_new(AST_PARAM_LIST, "param_list");
+          ast_add($$, ast_new(AST_NULL,"∅"));
       }
     ;
 
@@ -255,7 +256,7 @@ param
       {
           insert_symbol($2, 2, 0);
 
-          $$ = ast_new(AST_PARAM, NULL);
+          $$ = ast_new(AST_PARAM, "param");
           ast_add($$, ast_new(AST_TYPE_INT, "int"));
           ast_add($$, ast_new(AST_IDENTIFIER, $2));
       }
@@ -264,7 +265,7 @@ param
 compound_stmt
     : '{' stmt_list '}'
       {
-          $$ = ast_new(AST_COMPOUND_STMT, NULL);
+          $$ = ast_new(AST_COMPOUND_STMT, "compound_stmt");
           ast_add($$, $2);
       }
     ;
@@ -274,13 +275,14 @@ compound_stmt
 stmt_list
     : stmt_list stmt
       {
-          $$ = ast_new(AST_STMT_LIST, NULL);
+          $$ = ast_new(AST_STMT_LIST, "stmt_list");
           ast_add($$, $1);
           ast_add($$, $2);
       }
     | /* empty */
       {
-          $$ = ast_new(AST_STMT_LIST, NULL);
+          $$ = ast_new(AST_STMT_LIST, "stmt_list");
+          ast_add($$, ast_new(AST_NULL,"∅"));
       }
     ;
 
@@ -288,7 +290,7 @@ stmt_list
 if_prefix
     : T_If '(' expr ')' 
       {
-          $$ = ast_new(AST_IF, NULL);
+          $$ = ast_new(AST_IF, "if");
           ast_add($$, $3);
       }
     ;
@@ -306,14 +308,14 @@ INT_list
     : INT_list ',' T_Identifier
       {
           insert_symbol($3, 1, 0);
-          $$ = ast_new(AST_INT_LIST, NULL);
+          $$ = ast_new(AST_INT_LIST, "int_list");
           ast_add($$, $1);
           ast_add($$, ast_new(AST_IDENTIFIER, $3));
       }
     | T_Identifier
       {
           insert_symbol($1, 1, 0);
-          $$ = ast_new(AST_INT_LIST, NULL);
+          $$ = ast_new(AST_INT_LIST, "int_list");
           ast_add($$, ast_new(AST_IDENTIFIER, $1));
       }
     ;
@@ -322,51 +324,51 @@ INT_list
 stmt
     : T_Return expr ';'
       {
-          $$ = ast_new(AST_STMT, NULL);
+          $$ = ast_new(AST_STMT, "stmt");
           ast_add($$, ast_new(AST_RETURN,"return"));
           ast_add($$, $2);
       }
     | T_Int INT_list ';'
       {
-          $$ = ast_new(AST_STMT, NULL);
-          ast_add($$, ast_new(AST_TYPE_INT,"TYPE_INT"));
+          $$ = ast_new(AST_STMT, "stmt");
+          ast_add($$, ast_new(AST_TYPE_INT,"int"));
           ast_add($$, $2);
       }
     | T_Identifier '=' expr ';'
       {
-          $$ = ast_new(AST_STMT, NULL);
-          ast_add($$, ast_new(AST_IDENTIFIER,"IDENTIFIER"));
-          ast_add($$, ast_new(AST_ASSIGN,"ASSIGN"));
+          $$ = ast_new(AST_STMT, "stmt");
+          ast_add($$, ast_new(AST_IDENTIFIER,$1));
+          ast_add($$, ast_new(AST_ASSIGN,"="));
           ast_add($$, $3);
       }
     | T_Identifier '(' arg_list ')' ';'
       {
-          $$ = ast_new(AST_STMT, NULL);
+          $$ = ast_new(AST_STMT, "stmt");
           ast_add($$, ast_new(AST_FUNC_CALL, $1));
           ast_add($$, $3);
       }
     | compound_stmt
       {
-          $$ = ast_new(AST_STMT, NULL);
+          $$ = ast_new(AST_STMT, "stmt");
           ast_add($$, $1);   /* 将复合语句挂在 stmt 下 */
       }
     | if_prefix stmt %prec LOWER_THAN_ELSE
     {
-        AST* if_node = ast_new(AST_IF, NULL);
+        AST* if_node = ast_new(AST_IF, "if");
         ast_add(if_node, $1);
         ast_add(if_node, $2);
 
-        $$ = ast_new(AST_STMT, NULL);
+        $$ = ast_new(AST_STMT, "stmt");
         ast_add($$, if_node);
     }
     | if_prefix stmt T_Else stmt
     {
-        AST* ifelse_node = ast_new(AST_IF_ELSE, NULL);
+        AST* ifelse_node = ast_new(AST_IF_ELSE, "if_else");
         ast_add(ifelse_node, $1);  /* condition */
         ast_add(ifelse_node, $2);  /* then */
         ast_add(ifelse_node, $4);  /* else */
 
-        $$ = ast_new(AST_STMT, NULL);
+        $$ = ast_new(AST_STMT, "stmt");
         ast_add($$, ifelse_node);
     }
 
@@ -376,22 +378,22 @@ stmt
         ast_add(while_node, $3);  /* condition */
         ast_add(while_node, $5);  /* body */
 
-        $$ = ast_new(AST_STMT, NULL);
+        $$ = ast_new(AST_STMT, "stmt");
         ast_add($$, while_node);
     }
     | T_Break ';'
       {
-          $$ = ast_new(AST_STMT, NULL);
+          $$ = ast_new(AST_STMT, "stmt");
           ast_add($$, ast_new(AST_BREAK, "break"));
       }
     | T_Continue ';'
       {
-          $$ = ast_new(AST_STMT, NULL);
+          $$ = ast_new(AST_STMT, "stmt");
           ast_add($$, ast_new(AST_CONTINUE, "continue"));
       }
     | T_outputInt '(' expr ')' ';'
       {
-          $$ = ast_new(AST_STMT, NULL);
+          $$ = ast_new(AST_STMT, "stmt");
           ast_add($$, ast_new(AST_OUTPUT, "output"));
           ast_add($$, ast_new(AST_PUNCT, "("));
           ast_add($$, $3);
@@ -416,6 +418,7 @@ arg_list
     | /* empty */
       {
           $$ = ast_new(AST_ARG_LIST, NULL);
+          ast_add($$, ast_new(AST_NULL,"∅"));
       }
     ;
 
@@ -424,111 +427,115 @@ arg_list
 expr
     : T_IntConstant
       {
-          $$ = ast_new(AST_INT_CONST, NULL);
-          $$->value = $1;
+          $$ = ast_new(AST_EXPR, "EXPR");
+          char buff[10] = {0};
+          itoa($1,buff,10);
+          ast_add($$,ast_new(AST_INT_CONST,buff));
       }
     | T_Identifier
       {
           if(!is_symbol_defined($1)){
               yyerror("Undefined variable '%s'\n", $1);
           }
-          $$ = ast_new(AST_IDENTIFIER, $1);
+          $$ = ast_new(AST_EXPR, "EXPR");
+          ast_add($$,ast_new(AST_IDENTIFIER, $1));
       }
     | T_Identifier '(' arg_list ')'
       {
           if(!is_symbol_defined($1)){
               yyerror("Undefined function '%s'\n", $1);
           }
-          $$ = ast_new(AST_FUNC_CALL, $1);
+          $$ = ast_new(AST_EXPR, "EXPR");
+          ast_add($$, ast_new(AST_FUNC_CALL, $1));
           ast_add($$, ast_new(AST_PUNCT, "("));
           ast_add($$, $3);   /* 参数列表 */
           ast_add($$, ast_new(AST_PUNCT, ")"));
       }
     | T_inputInt '(' ')'
       {
-          $$ = ast_new(AST_INPUT, NULL);
+          $$ = ast_new(AST_INPUT, "input");
       }
     | expr '+' expr
       {
-          $$ = ast_new(AST_ADD, NULL);
+          $$ = ast_new(AST_ADD, "+");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr '-' expr
       {
-          $$ = ast_new(AST_SUB, NULL);
+          $$ = ast_new(AST_SUB, "-");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr '*' expr
       {
-          $$ = ast_new(AST_MUL, NULL);
+          $$ = ast_new(AST_MUL, "*");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr '/' expr
       {
-          $$ = ast_new(AST_DIV, NULL);
+          $$ = ast_new(AST_DIV, "/");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr T_Eq expr
       {
-          $$ = ast_new(AST_EQ, NULL);
+          $$ = ast_new(AST_EQ, "==");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr T_Ne expr
       {
-          $$ = ast_new(AST_NE, NULL);
+          $$ = ast_new(AST_NE, "!=");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr '<' expr
       {
-          $$ = ast_new(AST_LT, NULL);
+          $$ = ast_new(AST_LT, "<");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr '>' expr
       {
-          $$ = ast_new(AST_GT, NULL);
+          $$ = ast_new(AST_GT, ">");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr T_Le expr
       {
-          $$ = ast_new(AST_LE, NULL);
+          $$ = ast_new(AST_LE, "<=");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr T_Ge expr
       {
-          $$ = ast_new(AST_GE, NULL);
+          $$ = ast_new(AST_GE, ">=");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr T_Or expr
       {
-          $$ = ast_new(AST_OR, NULL);
+          $$ = ast_new(AST_OR, "||");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr T_And expr
       {
-          $$ = ast_new(AST_AND, NULL);
+          $$ = ast_new(AST_AND, "&&");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | expr T_Power expr
       {
-          $$ = ast_new(AST_POW, NULL);
+          $$ = ast_new(AST_POW, "pow");
           ast_add($$, $1);
           ast_add($$, $3);
       }
     | '(' expr ')'
       {
-          $$ = ast_new(AST_PAREN_EXPR, NULL);
+          $$ = ast_new(AST_PAREN_EXPR, ASTTypeName[AST_PAREN_EXPR]);
           ast_add($$, ast_new(AST_PUNCT, "("));
           ast_add($$, $2);
           ast_add($$, ast_new(AST_PUNCT, ")"));

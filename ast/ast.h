@@ -59,7 +59,8 @@ typedef enum {
     
     AST_PUNCT,
     AST_COMMA,
-    AST_PAREN_EXPR
+    AST_PAREN_EXPR,
+    AST_NULL
 } ASTType;
 
 int get_index(const char* s);

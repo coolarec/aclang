@@ -47,7 +47,8 @@ char* ASTTypeName[] = {
     "TYPE_VOID",
     "AST_PUNCT",
     "AST_COMMA",
-    "PAREN_EXPR"
+    "PAREN_EXPR",
+    "AST_NULL"
 };
 
 int get_index(const char* s) {

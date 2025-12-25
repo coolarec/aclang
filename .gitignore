@@ -2,3 +2,7 @@ win_flex_bison-latest/*
 lex.exe
 output/exe/*
 output/file/*
+aclang.code-workspace
+__pycache__
+.vscode
+.venv

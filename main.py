@@ -193,7 +193,46 @@ def getAST():
     except Exception as e:
         return jsonify({"success": False, "error": f"服务器内部错误: {str(e)}"}), 500
 
+@app.route("/asm", methods=["POST"])
+def getASM():
+    try:
+        source_code = request.json['code']
+        result = subprocess.run(
+            ["./output/test/acc"+(".exe" if is_windows() else "")],
+            input=source_code,
+            text=True,
+            encoding="utf-8",
+            capture_output=True,
+            timeout=10  # 添加超时防止卡死
+        )
 
+        # 检查返回码
+        if result.returncode == 0:
+            data = result.stdout
+            print(data)
+            # pt= PcodeToQuadsTranslator()
+            # print(pt.translate(data))
+            return jsonify({
+                "success": True,
+                "code": len(source_code),
+                "data": data,
+            })
+        else:
+            # 失败 - stderr可能包含错误信息
+            error_message = result.stderr if result.stderr else "编译过程出错"
+            return jsonify({
+                "success": False,
+                "error": error_message,
+                "returncode": result.returncode,
+                "raw_stderr": result.stderr,
+                "raw_stdout": json.loads(result.stdout)
+            }), 400
+    except KeyError:
+        return jsonify({"success": False, "error": "缺少code字段"}), 400
+    except subprocess.TimeoutExpired:
+        return jsonify({"success": False, "error": "处理超时"}), 408
+    except Exception as e:
+        return jsonify({"success": False, "error": f"服务器内部错误: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

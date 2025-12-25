@@ -75,10 +75,16 @@ case "$OS" in
         fi
         ;;
     Darwin)
-        if [[ "$ARCH" == "x86_64" ]]; then
+        # 现代 Mac 判断逻辑
+        if [[ "$ARCH" == "x86_64" || "$ARCH" == "arm64" ]]; then
+            # 无论是 Intel 64位 还是 Apple Silicon，目标通常都是 macho64
             FMT="macho64"
-        else
+        elif [[ "$ARCH" == "i386" || "$ARCH" == "i686" ]]; then
+            # 只有老旧的 Intel 32位 Mac 才使用 macho32
             FMT="macho32"
+        else
+            # 兜底策略：现代 Darwin 系统默认为 64 位
+            FMT="macho64"
         fi
         ;;
     *)

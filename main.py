@@ -5,6 +5,7 @@ from flask_cors import CORS
 import sys
 from quadruple import PcodeToQuadsTranslator
 import os
+from AsmOptimizer import AsmOptimizer
 def is_windows():
     return sys.platform.startswith("win")
 
@@ -234,6 +235,30 @@ def getASM():
     except Exception as e:
         return jsonify({"success": False, "error": f"服务器内部错误: {str(e)}"}), 500
 
+
+import platform
+
+def is_windows():
+    return platform.system() == "Windows"
+
+@app.route("/optimize", methods=["POST"])
+def optimize_route():
+    try:
+        source_asm = request.json.get('asm', '')
+        if not source_asm:
+            return jsonify({"success": False, "error": "No ASM code provided"}), 400
+        
+        optimizer = AsmOptimizer(source_asm)
+        result = optimizer.optimize()
+        
+        return jsonify({
+            "success": True,
+            "optimized_asm": result["data"],
+            "stats": result["stats"]
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+    
 @app.route("/run", methods=["POST"])
 def getResult():
     try:

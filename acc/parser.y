@@ -8,6 +8,27 @@ extern int yylineno;
 extern char* yytext;
 int has_errors = 0;
 
+/* ========= 跨平台寄存器定义与 ABI 适配 ========= */
+// 定义最大支持 6 个参数（通用 x64 限制）
+const char* arg_regs_win[] = {"rcx", "rdx", "r8", "r9"};
+const char* arg_regs_sysv[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
+
+#if defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
+    #define OS_NAME "Windows (x64 ABI)"
+    #define MAX_ARGS 4
+    #define SHADOW_SPACE 32
+    #define ARG_REG(i) arg_regs_win[i]
+#else
+    #define OS_NAME "Linux/macOS (System V ABI)"
+    #define MAX_ARGS 6
+    #define SHADOW_SPACE 0
+    #define ARG_REG(i) arg_regs_sysv[i]
+#endif
+
+// 这里的宏用于获取当前平台的第几个参数寄存器
+#define GET_ARG_REG(i) ( (i) < MAX_ARGS ? ARG_REG(i) : "stack" )
+
+
 /* ========= 跨平台系统识别与 ABI 适配 ========= */
 #if defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
     /* Windows x64 (Microsoft x64 ABI) */
@@ -43,7 +64,8 @@ int has_errors = 0;
 /* ========= 符号表 (带栈偏移量计算) ========= */
 #define MAX_SCOPE 16
 #define MAX_SYMBOL 128
-
+int current_param_idx=0;
+int call_arg_count=0;
 typedef struct {
     char name[64];
     int kind;   // 0=func, 1=INT, 2=param
@@ -68,24 +90,27 @@ void leave_scope() {
 }
 
 // 插入符号并分配偏移量
+// 修改 insert_symbol 的返回值
 int insert_symbol(char* name, int kind) {
     if (scope_top < 0) return -1;
     Scope* s = &scope_stack[scope_top];
     
     for (int i = 0; i < s->count; i++) {
-        if (strcmp(s->symbols[i].name, name) == 0) return -2; // 重复定义
+        if (strcmp(s->symbols[i].name, name) == 0) return -2; 
     }
     
     if (s->count < MAX_SYMBOL) {
         strncpy(s->symbols[s->count].name, name, 63);
         s->symbols[s->count].kind = kind;
-        // 只有变量需要分配栈偏移量 (8字节对齐)
         if (kind != 0) {
             current_func_stack_offset += 8;
             s->symbols[s->count].offset = current_func_stack_offset;
+        } else {
+            s->symbols[s->count].offset = 0;
         }
+        int res = s->symbols[s->count].offset; // 记录刚分配的偏移量
         s->count++;
-        return 0;
+        return res; // 返回偏移量
     }
     return -3;
 }
@@ -164,30 +189,30 @@ program
         printf("    global main\n\n");
         enter_scope();
       } 
-    function_list { leave_scope();}
+      function_list { leave_scope();}
     ;
 
-function_list
-    : function_list function
-    | function
-    ;
+function_list 
+    : function_list function 
+    | function ;
 
 function
     : T_Identifier T_Explain dtype
       {
-          insert_symbol($1, 0); // 记录函数名
+          insert_symbol($1, 0); 
           enter_scope();
           current_func_stack_offset = 0;
+          current_param_idx = 0; // 重置参数计数器
           printf("%s:\n", $1);
           emit("push rbp");
           emit("mov rbp, rsp");
-          emit("sub rsp, 512"); // 预留栈空间，包括局部变量和缓冲区
+          emit("sub rsp, 512"); // 预留局部变量空间
       }
       '(' param_list ')' compound_stmt
       {
-        emit("leave");
-        emit("ret\n");
-        leave_scope();
+          emit("leave");
+          emit("ret\n");
+          leave_scope();
       }
     ;
 
@@ -195,7 +220,19 @@ dtype : T_Int  | T_Void ;
 
 param_list : param_list ',' param | param | ;
 
-param : T_Int T_Identifier { insert_symbol($2, 2); };
+param : T_Int T_Identifier 
+    { 
+        int off = insert_symbol($2, 2); 
+        if (off < 0) {
+            yyerror("Redefinition or Symbol Table Full: %s", $2);
+        } else {
+            if (current_param_idx < MAX_ARGS) {
+                // 现在 off 是正确的偏移量（如 8, 16...）
+                emit("mov [rbp - %d], %s", off, GET_ARG_REG(current_param_idx));
+            }
+        }
+        current_param_idx++;
+    };
 
 compound_stmt : '{' stmt_list '}' ;
 
@@ -242,6 +279,12 @@ stmt
           emit("call printf");
           if (SHADOW_SPACE) emit("add rsp, %d", SHADOW_SPACE);
       }
+    | T_Identifier '(' { call_arg_count = 0; } arg_list ')' ';' 
+      {
+          // 纯函数调用语句（丢弃返回值）
+          emit("call %s", $1);
+          if (SHADOW_SPACE) emit("add rsp, %d", SHADOW_SPACE);
+      }
     ;
 
 if_start
@@ -273,6 +316,14 @@ while_cond
     }
     ;
 
+arg_list 
+    : arg_list_node 
+    | ;
+arg_list_node 
+    : arg_list_node ',' expr { call_arg_count++; }
+    | expr { call_arg_count++; }
+    ;
+
 expr
     : T_IntConstant { emit("push %d", $1); }
     | T_Identifier
@@ -280,6 +331,19 @@ expr
           Symbol* s = lookup_symbol($1);
           if (s) emit("push qword [rbp - %d]", s->offset);
           else yyerror("Undefined variable %s", $1);
+      }
+    | T_Identifier '(' { $<ival>$ = call_arg_count; call_arg_count = 0; } arg_list ')'
+      {
+          // 关键修复：函数调用表达式
+          // 根据参数个数，将栈上的值弹出到寄存器
+          for(int i = call_arg_count - 1; i >= 0; i--) {
+              if (i < MAX_ARGS) emit("pop %s", GET_ARG_REG(i));
+          }
+          if (SHADOW_SPACE) emit("sub rsp, %d", SHADOW_SPACE); // Windows 影子空间
+          emit("call %s", $1);
+          if (SHADOW_SPACE) emit("add rsp, %d", SHADOW_SPACE);
+          emit("push rax"); // 将返回值压栈
+          call_arg_count = $<ival>3; // 恢复之前的计数
       }
     | T_inputInt '(' ')'
       {

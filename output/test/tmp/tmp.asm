@@ -7,6 +7,18 @@ section .text
     extern printf, scanf
     global main
 
+foo:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 512
+    mov [rbp - 8], rcx
+    push qword [rbp - 8]
+    pop rax
+    leave
+    ret
+    leave
+    ret
+
 main:
     push rbp
     mov rbp, rsp
@@ -18,6 +30,11 @@ main:
     call scanf
     add rsp, 32
     push qword [rbp - 512]
+    pop rcx
+    sub rsp, 32
+    call foo
+    add rsp, 32
+    push rax
     pop rax
     mov [rbp - 8], rax
     push qword [rbp - 8]

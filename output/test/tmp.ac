@@ -1,6 +1,12 @@
-main:int()
-{
+foo:int(int n) {
     int a;
-    a=inputInt();
+    a = n + 0;
+    a = a * 8;
+    return a;
+}
+main:int() {
+    int a;
+    a=foo(inputInt());
+    outputInt(a);
     return 0;
 }
